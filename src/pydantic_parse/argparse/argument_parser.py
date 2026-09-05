@@ -17,6 +17,18 @@ class PydanticArgParser(argparse.ArgumentParser):
         if arg_info.flag:
             arg_name = f"--{arg_name}"
 
+        if arg_info.flag and arg_info.arg_type is bool:
+            return self.add_argument(
+                arg_name,
+                action="store_true",
+                default=False if arg_info.is_required() else arg_info.default,
+                help=arg_info.description,
+            )
+
+        # FIXME: currently for bool
+        # if default was set but is not optional,
+        # ends up giving None in default but allows to be not given
+        # in theory, no non-optional flags --> unify, currently quickfix
         return super().add_argument(
             arg_name,
             type=arg_info.arg_type,

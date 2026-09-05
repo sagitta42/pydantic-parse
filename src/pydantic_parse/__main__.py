@@ -13,8 +13,8 @@ from pydantic_parse.logger import logg
 def main():
 
     class TestChoices(enum.StrEnum):
-        a = "a"
-        b = "b"
+        alice = "Alice"
+        bob = "Bob"
 
     class TestModel(ArgModel):
         name: TestChoices = ArgField(description="Name")
@@ -22,6 +22,7 @@ def main():
             description="value",
             optional=True,
             default=None,
+            flag=True
         )
         flag: bool = ArgField(description="flag", default=False, flag=True)
 
@@ -40,7 +41,10 @@ def main():
     # foo_subparser.add_argument("answer", type=int, help="Answer to check")
 
     # output = is_answer(args.answer)
-    logg.info(args)
+    logg.info(vars(args))
+
+    model = TestModel(**vars(args))
+    logg.info(model)
 
 
 if __name__ == "__main__":
