@@ -1,76 +1,56 @@
 # pydantic-parse
 
+Pydantic adaptor for argparse
 
-## Usage
+Example
+```python
 
+def main():
 
-Import:
-```bash
->>> from pydantic_parse import is_answer
->>> is_answer(42)
-True
->>> is_answer(43)
-False
+    class TestChoices(enum.StrEnum):
+        alice = "Alice"
+        bob = "Bob"
+
+    class TestModel(ArgModel):
+        name: TestChoices = ArgField(description="Name")
+        some_value: Optional[str] = ArgField(
+            description="value",
+            optional=True,
+            default=None,
+            flag=True
+        )
+        flag: bool = ArgField(description="flag", default=False, flag=True)
+
+    parser = PydanticArgParser()
+    parser.add_arguments_from_model(TestModel)
+    args = parser.parse_args()
 ```
 
-CLI:
+CLI
 ```bash
-$ pydantic-parse -h
-usage: pydantic-parse [-h] {foo} ...
-
-positional arguments:
-  {foo}
-    foo       foo functionalities
-
-options:
-  -h, --help  show this help message and exit
-
-$ pydantic-parse foo -h
-usage: pydantic-parse foo [-h] answer
-
-positional arguments:
-  answer      Answer to check
-
-options:
-  -h, --help  show this help message and exit
+my-package Alice --some-value 42
 ```
 
-Example:
-```bash
-$ pydantic-parse foo 67
-Is 67 the answer to the question of life, universe, and everything? - False
+Results in `vars(args)`:
+
+```python
+{
+  'name': <TestChoices.alice: 'Alice'>,
+  'some_value': '42',
+  'flag': False
+}
 ```
 
-Equivalent to `python -m pydantic_parse foo 67`
-
-
-## For dummies / development notes
-
-Local install
-
-```bash
-pip install /path/to/pydantic-parse
+Or of course
+```python
+model = TestModel(**vars(args))
 ```
 
-Run tests
-```bash
-cd /path/to/pydantic-parse
-source venv/bin/activate
+gives
+```python
+TestModel
+name=<TestChoices.alice: 'Alice'> some_value='42' flag=False
 ```
-
-Option 1: run `poetry install` to install this package into its own `venv`
-
-Option 2: set up debug environment `cp .env.template` to make source files visible to `pytest`.
-
-Then, run `pytest`.
-
-Note: `poetiq` has already fully set up `venv` for you, including installing `pytest`.
-
-Add remote
-```bash
-git remote add origin https://...
-```
-
 
 -----
 *Made with [poetiq](https://pypi.org/project/poetiq)*
