@@ -2,9 +2,9 @@ from typing import Any, Self, Type
 
 from pydantic import BaseModel, model_validator
 
-from pydantic_parse.argparse_model.field import ArgFieldInfo
-from pydantic_parse.argparse_model.internal_attr import InternalAttr
-from pydantic_parse.argparse_model.meta import ArgModelMeta
+from pydantic_parse.argmodel.field import ArgFieldInfo
+from pydantic_parse.argmodel.internal_attr import InternalAttr
+from pydantic_parse.argmodel.meta import ArgModelMeta
 
 
 class ArgModel(BaseModel, metaclass=ArgModelMeta):

@@ -3,8 +3,8 @@ from typing import Optional
 from pydantic import Field
 
 from pydantic_parse.argparse.argument_parser import PydanticArgParser
-from pydantic_parse.argparse_model.field import ArgField, ArgFieldInfo
-from pydantic_parse.argparse_model.model import ArgModel
+from pydantic_parse.argmodel.field import ArgField, ArgFieldInfo
+from pydantic_parse.argmodel.model import ArgModel
 from pydantic_parse.exceptions import PydanticParseTypeError
 from pydantic_parse.logger import logg
 

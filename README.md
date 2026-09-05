@@ -5,6 +5,8 @@ Pydantic adaptor for argparse
 Example
 ```python
 
+from pydantic_parse import ArgField, ArgModel, PydanticArgParser
+
 def main():
 
     class TestChoices(enum.StrEnum):
@@ -26,12 +28,28 @@ def main():
     args = parser.parse_args()
 ```
 
-CLI
+CLI result:
+```bash
+$ pydantic-parse -h
+usage: pydantic-parse [-h] [--some-value SOME_VALUE] [--flag] {Alice,Bob}
+
+positional arguments:
+  {Alice,Bob}           Name
+
+options:
+  -h, --help            show this help message and exit
+  --some-value SOME_VALUE
+                        value
+  --flag                flag
+```  
+
+CLI input:
+
 ```bash
 my-package Alice --some-value 42
 ```
 
-Results in `vars(args)`:
+results in `vars(args)`:
 
 ```python
 {

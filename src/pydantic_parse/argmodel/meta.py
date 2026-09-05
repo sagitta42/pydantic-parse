@@ -2,8 +2,8 @@ from typing import Any, Type
 
 from pydantic import BaseModel, Field
 
-from pydantic_parse.argparse_model.field import ArgField, ArgFieldInfo
-from pydantic_parse.argparse_model.internal_attr import AttrDescription, InternalAttr
+from pydantic_parse.argmodel.field import ArgField, ArgFieldInfo
+from pydantic_parse.argmodel.internal_attr import AttrDescription, InternalAttr
 from pydantic_parse.exceptions import PydanticParseTypeError
 
 

@@ -1,8 +1,8 @@
 import argparse
 from typing import Type
 
-from pydantic_parse.argparse_model.field import ArgFieldInfo
-from pydantic_parse.argparse_model.model import ArgModel
+from pydantic_parse.argmodel.field import ArgFieldInfo
+from pydantic_parse.argmodel.model import ArgModel
 
 
 class PydanticArgParser(argparse.ArgumentParser):
