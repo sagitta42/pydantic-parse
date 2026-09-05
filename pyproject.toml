@@ -1,7 +1,7 @@
 [project]
 name = "pydantic-parse"
 version = "0.1.0"
-description = ""
+description = "Pydantic adaptor for argparse"
 authors = [
     {name = "sagitta42",email = "mariia.redchuk@gmail.com"}
 ]
