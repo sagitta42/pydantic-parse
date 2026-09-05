@@ -1,0 +1,26 @@
+{
+    "python.testing.pytestArgs": [
+        "-s",
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "editor.formatOnSave": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "python.languageServer": "Pylance",
+    "python.analysis.typeCheckingMode": "standard",
+    "python.analysis.indexing": true,
+    "python.analysis.packageIndexDepths": [
+        {
+            "name": "",
+            "depth": 5
+        }
+    ],
+    "files.refactoring.autoSave": true,
+    "python.analysis.autoImportCompletions": true,
+    "files.autoSave": "afterDelay",
+    "git.autofetch": true,
+    "git.autofetchPeriod": 180
+}
