@@ -1,11 +1,15 @@
 import json
 from pathlib import Path
+from typing import Optional
 from pydantic import BaseModel
 import pytest
 import sys
 import os
 
 from dotenv import dotenv_values
+
+from pydantic_parse.argparse_model.field import ArgField
+from pydantic_parse.argparse_model.model import ArgModel
 
 env_config = dotenv_values()
 is_debug = env_config.get("DEBUG", "").lower() in ("true", "1")
@@ -22,24 +26,27 @@ PATH_TO_ASSETS = Path(os.path.dirname(__file__))
 PATH_TO_CONFIGS = PATH_TO_ASSETS / "configs"
 
 
-class TestCase(BaseModel):
-    answer: int
-    message: str
+class TestCaseModel(ArgModel):
+    name: str = ArgField(description="Name")
+    value: Optional[str] = ArgField(
+        description="value", optional=True, default=None, informative=True, const="foo"
+    )
+    flag: bool = ArgField(description="flag", default=False)  # not allowed
 
 
-def read_test_config(filename: str) -> TestCase:
+def read_test_config(filename: str) -> TestCaseModel:
     config_path = PATH_TO_CONFIGS / f"{filename}.json"
     with open(config_path) as f:
-        dataset_info = TestCase(**json.load(f))
+        dataset_info = TestCaseModel(**json.load(f))
     return dataset_info
 
 
-def get_test_case(filename) -> TestCase:
+def get_test_case(filename) -> TestCaseModel:
     test_case = read_test_config(filename)
     ret = [pytest.param(test_case, id=filename)]
     return ret
 
 
 @pytest.fixture(params=get_test_case("test_case"))
-def test_case_example(request) -> TestCase:
+def test_case_model(request) -> TestCaseModel:
     return request.param

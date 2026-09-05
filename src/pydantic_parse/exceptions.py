@@ -1,0 +1,2 @@
+class PydanticParseTypeError(TypeError):
+    pass

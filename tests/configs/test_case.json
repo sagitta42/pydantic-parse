@@ -1,4 +1,5 @@
 {
-    "answer": 42,
-    "message": "The answer to the question of life, universe, and everything"
+    "name": "Alice",
+    "value": null,
+    "flag": true
 }
