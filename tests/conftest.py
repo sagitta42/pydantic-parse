@@ -8,8 +8,8 @@ import os
 
 from dotenv import dotenv_values
 
-from pydantic_parse.argparse_model.field import ArgField
-from pydantic_parse.argparse_model.model import ArgModel
+from pydantic_parse.argmodel.field import ArgField
+from pydantic_parse.argmodel.model import ArgModel
 
 env_config = dotenv_values()
 is_debug = env_config.get("DEBUG", "").lower() in ("true", "1")
