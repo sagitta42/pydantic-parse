@@ -31,7 +31,7 @@ class TestCaseModel(ArgModel):
     value: Optional[str] = ArgField(
         description="value", optional=True, default=None, informative=True, const="foo"
     )
-    flag: bool = ArgField(description="flag", default=False)  # not allowed
+    flag: bool = ArgField(description="flag", default=False, flag=True)
 
 
 def read_test_config(filename: str) -> TestCaseModel:

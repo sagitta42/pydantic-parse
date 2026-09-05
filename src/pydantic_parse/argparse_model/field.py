@@ -1,3 +1,4 @@
+import enum
 from typing import Any, Union, get_args, get_origin
 
 from pydantic import Field
@@ -45,6 +46,14 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
 
         return ret
 
+    @property
+    def choices(self) -> list | None:
+        assert self.arg_type is not None
+        if issubclass(self.arg_type, enum.Enum):
+            ret = [item.value for item in self.arg_type]
+            return ret
+        return None
+
     @classmethod
     def from_field_info(
         cls,
@@ -64,7 +73,8 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         new.const = const
         return new
 
-    def get_type(self) -> type:
+    @property
+    def arg_type(self) -> type:
         """
         Get argument type from annotation.
 
