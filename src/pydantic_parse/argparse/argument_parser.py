@@ -1,8 +1,10 @@
 import argparse
-from typing import Type
+from typing import Any, Type
 
 from pydantic_parse.argmodel.field import ArgFieldInfo
 from pydantic_parse.argmodel.model import ArgModel
+
+from pydantic_parse.logger import logg
 
 
 class PydanticArgParser(argparse.ArgumentParser):
@@ -11,12 +13,18 @@ class PydanticArgParser(argparse.ArgumentParser):
             self.add_argument_from_field(arg_name, arg_info)
 
     def add_argument_from_field(
-        self, name: str, arg_info: ArgFieldInfo, **kwargs
+        self,
+        name: str,
+        arg_info: ArgFieldInfo,
+        choices: list[Any] | None = None,
+        description_extra: str | None = None,
+        **kwargs,
     ) -> argparse.Action:
         arg_name = name.replace("_", "-")
         if arg_info.flag:
             arg_name = f"--{arg_name}"
 
+        # TODO: flag must always have default False? (store_true concept)
         if arg_info.flag and arg_info.arg_type is bool:
             return self.add_argument(
                 arg_name,
@@ -25,10 +33,18 @@ class PydanticArgParser(argparse.ArgumentParser):
                 help=arg_info.description,
             )
 
+        description = arg_info.description
+        if description_extra is not None:
+            description = f"{description} {description_extra}"
+
         # FIXME: currently for bool
         # if default was set but is not optional,
         # ends up giving None in default but allows to be not given
         # in theory, no non-optional flags --> unify, currently quickfix
+        flag_kwargs = {}
+        if arg_info.flag:
+            flag_kwargs["required"] = not arg_info.optional
+
         return super().add_argument(
             arg_name,
             type=arg_info.arg_type,
@@ -41,6 +57,7 @@ class PydanticArgParser(argparse.ArgumentParser):
                 else None
             ),
             const=arg_info.const if arg_info.flag and arg_info.informative else None,
-            help=arg_info.description,
+            help=description,
+            **flag_kwargs,
             **kwargs,
         )
