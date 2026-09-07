@@ -1,5 +1,6 @@
 import enum
-from typing import Any, Union, get_args, get_origin
+from pathlib import Path
+from typing import Any, Self, Union, get_args, get_origin
 
 from pydantic import Field
 from pydantic.fields import FieldInfo
@@ -44,6 +45,8 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
             # TODO: validator
             assert len(real_types) == 1
             return real_types[0]
+        if self.annotation is Path:
+            return str
         return self.annotation
 
     @property

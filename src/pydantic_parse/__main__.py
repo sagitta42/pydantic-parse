@@ -1,4 +1,5 @@
 import enum
+from pathlib import Path
 import sys
 from typing import Optional
 
@@ -20,6 +21,7 @@ def main():
             description="value", optional=True, default=None, flag=True
         )
         flag: bool = ArgField(description="flag", default=False, flag=True)
+        folder: Path = ArgField(description="Folder", flag=True)
 
     parser = PydanticArgParser()
 
