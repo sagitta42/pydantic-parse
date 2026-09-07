@@ -1,10 +1,12 @@
 import enum
 from pathlib import Path
-from typing import Any, Self, Union, get_args, get_origin
+from typing import Any, Union, get_args, get_origin
 
 from pydantic import Field
 from pydantic.fields import FieldInfo
 from pydantic_core import PydanticUndefined
+
+from pydantic_parse.exceptions import PydanticParseValueError
 
 # from pydantic.fields import _FieldInfoInputs,  _FieldInfoAsDict
 
@@ -94,6 +96,14 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         new = cls.__new__(cls)
         for slot in FieldInfo.__slots__:
             setattr(new, slot, getattr(field_info, slot))
+
+        if optional and new.default is PydanticUndefined:
+            # TODO: include default_factory
+            # if optional and new.is_required():
+            raise PydanticParseValueError(
+                f"Optional ArgField must have a defined default! Please provide default="
+            )
+
         new.flag = flag
         new.optional = optional
         new.informative = informative
