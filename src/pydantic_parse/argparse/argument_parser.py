@@ -33,7 +33,7 @@ class PydanticArgParser(argparse.ArgumentParser):
             arg_name,
             type=arg_info.arg_type,
             choices=arg_info.choices,
-            default=arg_info.default if arg_info.optional else None,
+            default=arg_info.arg_default if arg_info.optional else None,
             nargs=(
                 "?"
                 if (arg_info.flag and arg_info.informative)

@@ -21,6 +21,38 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         self.informative: bool = informative
         self.const: Any = const
 
+    @property
+    def choices(self) -> list | None:
+        assert self.arg_type is not None
+        if issubclass(self.arg_type, enum.Enum):
+            ret = [item.value for item in self.arg_type]
+            return ret
+        return None
+
+    @property
+    def arg_type(self) -> type:
+        """
+        Get argument type from annotation.
+
+        Extract real type from type union to cover Optional[type] case.
+        """
+        # TODO: validator
+        assert self.annotation is not None
+        if get_origin(self.annotation) is Union:
+            types = get_args(self.annotation)
+            real_types = [tp for tp in types if not tp is type(None)]
+            # TODO: validator
+            assert len(real_types) == 1
+            return real_types[0]
+        return self.annotation
+
+    @property
+    def arg_default(self) -> Any:
+        ret = self.default
+        if isinstance(ret, enum.Enum):
+            ret = ret.value
+        return ret
+
     def as_dict(self) -> dict[str, Any]:
         """
         Serialize argument properties as dict.
@@ -46,14 +78,6 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
 
         return ret
 
-    @property
-    def choices(self) -> list | None:
-        assert self.arg_type is not None
-        if issubclass(self.arg_type, enum.Enum):
-            ret = [item.value for item in self.arg_type]
-            return ret
-        return None
-
     @classmethod
     def from_field_info(
         cls,
@@ -72,23 +96,6 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         new.informative = informative
         new.const = const
         return new
-
-    @property
-    def arg_type(self) -> type:
-        """
-        Get argument type from annotation.
-
-        Extract real type from type union to cover Optional[type] case.
-        """
-        # TODO: validator
-        assert self.annotation is not None
-        if get_origin(self.annotation) is Union:
-            types = get_args(self.annotation)
-            real_types = [tp for tp in types if not tp is type(None)]
-            # TODO: validator
-            assert len(real_types) == 1
-            return real_types[0]
-        return self.annotation
 
 
 def ArgField(
