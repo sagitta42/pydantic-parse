@@ -10,7 +10,8 @@ from pydantic_parse.logger import logg
 class PydanticArgParser(argparse.ArgumentParser):
     def add_arguments_from_model(self, model: Type[ArgModel]):
         for arg_name, arg_info in model.arg_fields().items():
-            self.add_argument_from_field(arg_name, arg_info)
+            if arg_info.cli:
+                self.add_argument_from_field(arg_name, arg_info)
 
     def add_argument_from_field(
         self,

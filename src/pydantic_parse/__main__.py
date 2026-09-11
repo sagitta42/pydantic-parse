@@ -1,7 +1,7 @@
 import enum
 from pathlib import Path
 import sys
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic_parse.argparse.argument_parser import PydanticArgParser
 from pydantic_parse.argmodel.field import ArgField
@@ -16,11 +16,18 @@ def main():
         bob = "Bob"
 
     class TestModel(ArgModel):
+        ignored_arg: str = ArgField(
+            default="foo",
+            description="Ignored argument (will not be added to CLI)",
+            cli=False,
+        )
         choice_arg: TestChoices = ArgField(description="Arg with choices")
-        some_value: Optional[str] = ArgField(
+        optional_flag: Optional[str] = ArgField(
             description="value", optional=True, default=None, flag=True
         )
-        flag: bool = ArgField(description="flag", default=False, flag=True)
+        # TODO: informative flag
+        # TODO: handle bool flag default should always be False (action store_true)
+        bool_flag: bool = ArgField(description="flag", default=False, flag=True)
         folder: Path = ArgField(description="Folder", flag=True)
 
     parser = PydanticArgParser()
@@ -37,8 +44,10 @@ def main():
     # foo_subparser = subparsers.add_parser("foo", help="foo functionalities")
     # foo_subparser.add_argument("answer", type=int, help="Answer to check")
 
+    logg.info("Parsed arguments:")
     logg.info(vars(args))
 
+    logg.info("Pydantic model:")
     model = TestModel(**vars(args))
     logg.info(model)
 

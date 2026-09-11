@@ -12,10 +12,16 @@ from pydantic_parse.exceptions import PydanticParseValueError
 
 
 class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
-    __slots__ = ("flag", "optional", "informative", "const")
+    __slots__ = ("flag", "optional", "informative", "const", "cli")
 
     def __init__(
-        self, flag: bool, optional: bool, informative: bool, const: Any, **kwargs: Any
+        self,
+        flag: bool,
+        optional: bool,
+        informative: bool,
+        const: Any,
+        cli: bool,
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
 
@@ -23,6 +29,7 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         self.optional: bool = optional
         self.informative: bool = informative
         self.const: Any = const
+        self.cli: bool = cli
 
     @property
     def choices(self) -> list | None:
@@ -92,22 +99,25 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         optional: bool,
         informative: bool,
         const: Any,
+        cli: bool,
     ) -> "ArgFieldInfo":
         new = cls.__new__(cls)
         for slot in FieldInfo.__slots__:
             setattr(new, slot, getattr(field_info, slot))
 
-        if optional and new.default is PydanticUndefined:
+        if (optional or not cli) and new.default is PydanticUndefined:
             # TODO: include default_factory
             # if optional and new.is_required():
+            arg_descr = "Optional" if optional else "Non-CLI"
             raise PydanticParseValueError(
-                f"Optional ArgField must have a defined default! Please provide default="
+                f"{arg_descr} ArgField must have a defined default! Please provide default="
             )
 
         new.flag = flag
         new.optional = optional
         new.informative = informative
         new.const = const
+        new.cli = cli
         return new
 
 
@@ -117,9 +127,15 @@ def ArgField(
     optional: bool = False,
     informative: bool = False,
     const: Any = None,
+    cli: bool = True,
     **kwargs: Any,
 ) -> Any:
     field_info = Field(**kwargs)
     return ArgFieldInfo.from_field_info(
-        field_info, flag=flag, optional=optional, informative=informative, const=const
+        field_info,
+        flag=flag,
+        optional=optional,
+        informative=informative,
+        const=const,
+        cli=cli,
     )

@@ -48,7 +48,7 @@ class ArgModel(BaseModel, metaclass=ArgModelMeta):
     @classmethod
     def arg_fields(cls) -> dict[str, ArgFieldInfo]:
         """
-        Model info that represent arguments.
+        Model fields that represent arguments.
 
         Non-argument (internal) attribuges are skipped.
         """
@@ -58,6 +58,20 @@ class ArgModel(BaseModel, metaclass=ArgModelMeta):
             if not field_name in InternalAttr
         }
 
+        return ret
+
+    @classmethod
+    def cli_fields(cls) -> dict[str, ArgFieldInfo]:
+        """
+        Model fields that represent CLI arguments.
+
+        Non-CLI arguments are skipped.
+        """
+        ret = {
+            field_name: field_info
+            for field_name, field_info in cls.arg_fields().items()
+            if field_info.cli
+        }
         return ret
 
     # @model_validator(mode="before")
