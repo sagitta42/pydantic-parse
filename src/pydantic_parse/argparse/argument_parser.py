@@ -8,17 +8,20 @@ from pydantic_parse.logger import logg
 
 
 class PydanticArgParser(argparse.ArgumentParser):
-    def add_arguments_from_model(self, model: Type[ArgModel]):
+    def add_arguments_from_model(
+        self, model: Type[ArgModel], choices: dict[str, list[Any]] = {}
+    ):
         for arg_name, arg_info in model.arg_fields().items():
             if arg_info.cli:
-                self.add_argument_from_field(arg_name, arg_info)
+                self.add_argument_from_field(
+                    arg_name, arg_info, choices=choices.get(arg_name, None)
+                )
 
     def add_argument_from_field(
         self,
         name: str,
         arg_info: ArgFieldInfo,
         choices: list[Any] | None = None,
-        description_extra: str | None = None,
         **kwargs,
     ) -> argparse.Action:
         arg_name = arg_info.alias or name
@@ -34,10 +37,6 @@ class PydanticArgParser(argparse.ArgumentParser):
                 default=False if arg_info.is_required() else arg_info.default,
                 help=arg_info.description,
             )
-
-        description = arg_info.description
-        if description_extra is not None:
-            description = f"{description} {description_extra}"
 
         # FIXME: currently for bool
         # if default was set but is not optional,
@@ -59,7 +58,7 @@ class PydanticArgParser(argparse.ArgumentParser):
                 else None
             ),
             const=arg_info.const if arg_info.flag and arg_info.informative else None,
-            help=description,
+            help=arg_info.description,
             **flag_kwargs,
             **kwargs,
         )
