@@ -16,7 +16,7 @@ def main():
         bob = "Bob"
 
     class TestModel(ArgModel):
-        name: TestChoices = ArgField(description="Name")
+        choice_arg: TestChoices = ArgField(description="Arg with choices")
         some_value: Optional[str] = ArgField(
             description="value", optional=True, default=None, flag=True
         )

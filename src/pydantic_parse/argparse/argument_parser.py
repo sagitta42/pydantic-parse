@@ -20,8 +20,9 @@ class PydanticArgParser(argparse.ArgumentParser):
         description_extra: str | None = None,
         **kwargs,
     ) -> argparse.Action:
-        arg_name = name.replace("_", "-")
+        arg_name = name
         if arg_info.flag:
+            arg_name = arg_name.replace("_", "-")
             arg_name = f"--{arg_name}"
 
         # TODO: flag must always have default False? (store_true concept)
