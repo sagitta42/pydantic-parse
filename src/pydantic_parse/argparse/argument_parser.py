@@ -21,7 +21,7 @@ class PydanticArgParser(argparse.ArgumentParser):
         description_extra: str | None = None,
         **kwargs,
     ) -> argparse.Action:
-        arg_name = name
+        arg_name = arg_info.alias or name
         if arg_info.flag:
             arg_name = arg_name.replace("_", "-")
             arg_name = f"--{arg_name}"

@@ -28,7 +28,7 @@ def main():
         # TODO: informative flag
         # TODO: handle bool flag default should always be False (action store_true)
         bool_flag: bool = ArgField(description="flag", default=False, flag=True)
-        folder: Path = ArgField(description="Folder", flag=True)
+        folder: Path = ArgField(description="Folder", flag=True, alias="folder_path")
 
     parser = PydanticArgParser()
 
