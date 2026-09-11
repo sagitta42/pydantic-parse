@@ -48,7 +48,7 @@ class PydanticArgParser(argparse.ArgumentParser):
         return super().add_argument(
             arg_name,
             type=arg_info.arg_type,
-            choices=arg_info.choices,
+            choices=choices or arg_info.choices,
             default=arg_info.arg_default if arg_info.optional else None,
             nargs=(
                 "?"
