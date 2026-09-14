@@ -23,12 +23,14 @@ def main():
         )
         choice_arg: TestChoices = ArgField(description="Arg with choices")
         optional_flag: Optional[str] = ArgField(
-            description="value", optional=True, default=None, flag=True
+            description="Optional flag", optional=True, default=None, flag=True
         )
         # TODO: informative flag
         # TODO: handle bool flag default should always be False (action store_true)
-        bool_flag: bool = ArgField(description="flag", default=False, flag=True)
-        folder: Path = ArgField(description="Folder", flag=True, alias="folder_path")
+        bool_flag: bool = ArgField(description="Bool flag", default=False, flag=True)
+        folder: Path = ArgField(
+            description="Folder arg", flag=True, alias="folder_path"
+        )
 
     parser = PydanticArgParser()
 
@@ -38,6 +40,7 @@ def main():
         parser.print_help()
         sys.exit(0)
 
+    # TODO: parse args directly into model
     args = parser.parse_args()
 
     # subparsers = parser.add_subparsers(dest="command")

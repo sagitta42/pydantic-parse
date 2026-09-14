@@ -14,14 +14,17 @@ def main():
         bob = "Bob"
 
     class TestModel(ArgModel):
-        name: TestChoices = ArgField(description="Name")
-        some_value: Optional[str] = ArgField(
-            description="value",
-            optional=True,
-            default=None,
-            flag=True
+        ignored_arg: str = ArgField(
+            default="foo",
+            description="Ignored argument (will not be added to CLI)",
+            cli=False,
         )
-        flag: bool = ArgField(description="flag", default=False, flag=True)
+        choice_arg: TestChoices = ArgField(description="Arg with choices")
+        optional_flag: Optional[str] = ArgField(
+            description="value", optional=True, default=None, flag=True
+        )
+        bool_flag: bool = ArgField(description="flag", default=False, flag=True)
+        folder: Path = ArgField(description="Folder", flag=True, alias="folder_path")
 
     parser = PydanticArgParser()
     parser.add_arguments_from_model(TestModel)
@@ -30,36 +33,39 @@ def main():
 
 CLI result:
 ```bash
-$ pydantic-parse -h
-usage: pydantic-parse [-h] [--some-value SOME_VALUE] [--flag] {Alice,Bob}
+$ my-package -h
+usage: my-package [-h] [--optional-flag OPTIONAL_FLAG] [--bool-flag] --folder-path FOLDER_PATH {Alice,Bob}
 
 positional arguments:
-  {Alice,Bob}           Name
+  {Alice,Bob}           Arg with choices
 
 options:
   -h, --help            show this help message and exit
-  --some-value SOME_VALUE
-                        value
-  --flag                flag
-```  
+  --optional-flag OPTIONAL_FLAG
+                        Optional flag
+  --bool-flag           Bool flag
+  --folder-path FOLDER_PATH
+                        Folder arg
+```
 
 CLI input:
 
 ```bash
-my-package Alice --some-value 42
+$ my-package --optional-flag foo --folder tests/ Alice
 ```
 
 results in `vars(args)`:
 
 ```python
 {
-  'name': <TestChoices.alice: 'Alice'>,
-  'some_value': '42',
-  'flag': False
+    'choice_arg': <TestChoices.alice: 'Alice'>,
+    'optional_flag': 'foo',
+    'bool_flag': False,
+    'folder_path': PosixPath('tests')
 }
 ```
 
-Or of course
+And
 ```python
 model = TestModel(**vars(args))
 ```
@@ -67,7 +73,7 @@ model = TestModel(**vars(args))
 gives
 ```python
 TestModel
-name=<TestChoices.alice: 'Alice'> some_value='42' flag=False
+ignored_arg='foo' choice_arg=<TestChoices.alice: 'Alice'> optional_flag='foo' bool_flag=False folder=PosixPath('tests')
 ```
 
 -----
