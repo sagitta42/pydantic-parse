@@ -52,6 +52,7 @@ class PydanticArgParser(argparse.ArgumentParser):
         if arg_info.flag:
             flag_kwargs["required"] = not arg_info.optional
 
+        logg.debug(f"{arg_name} - {arg_info.arg_type}")
         return super().add_argument(
             arg_name,
             type=arg_info.arg_type,

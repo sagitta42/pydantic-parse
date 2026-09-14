@@ -54,8 +54,6 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
             # TODO: validator
             assert len(real_types) == 1
             return real_types[0]
-        if self.annotation is Path:
-            return str
         return self.annotation
 
     @property
