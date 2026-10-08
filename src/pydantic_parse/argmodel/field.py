@@ -1,5 +1,5 @@
 import enum
-from typing import Any, Union, get_args, get_origin
+from typing import Any, Optional, Union, get_args, get_origin
 
 from pydantic import Field
 from pydantic.fields import FieldInfo
@@ -131,11 +131,23 @@ def ArgField(
     flag: bool = False,
     optional: bool = False,
     informative: bool = False,
-    const: Any = None,
+    const: Optional[Any] = None,
     alt: str | list[str] = [],
     cli: bool = True,
     **kwargs: Any,
 ) -> Any:
+    """
+    Create an argument field representing argparse.ArgumentParser argument.
+
+    Args:
+        flag (bool): field is a flag i.e. will become a optional argument i.e. --name
+        optional (bool): field is optional i.e. will become a non-required argument i.e. [name]
+        informative (bool): field is informative i.e. has a const value i.e. providing simply --name sets a const value that may differ from default (for flags only)
+        const (bool): value to set in argument in case simply --name is provided in CLI (optional)
+        alt (str | list[str]): alternative name(s) for flag i.e. providing e.g. -n will result in --name, -n options
+        cli (bool): field is CLI argument; if False will be present in pydantic model but ignored by PydanticArgParser (defaults to True)
+
+    """
     field_info = Field(**kwargs)
     return ArgFieldInfo.from_field_info(
         field_info,
