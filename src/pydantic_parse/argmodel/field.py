@@ -1,5 +1,4 @@
 import enum
-from pathlib import Path
 from typing import Any, Union, get_args, get_origin
 
 from pydantic import Field
@@ -12,7 +11,7 @@ from pydantic_parse.exceptions import PydanticParseValueError
 
 
 class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
-    __slots__ = ("flag", "optional", "informative", "const", "cli")
+    __slots__ = ("flag", "optional", "informative", "const", "alt", "cli")
 
     def __init__(
         self,
@@ -20,6 +19,7 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         optional: bool,
         informative: bool,
         const: Any,
+        alt: str | list[str],
         cli: bool,
         **kwargs: Any,
     ) -> None:
@@ -29,7 +29,12 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         self.optional: bool = optional
         self.informative: bool = informative
         self.const: Any = const
+        self.alt: str | list[str] = alt
         self.cli: bool = cli
+
+    @property
+    def alt_names(self) -> list[str]:
+        return self.alt if isinstance(self.alt, list) else [self.alt]
 
     @property
     def choices(self) -> list | None:
@@ -97,6 +102,7 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         optional: bool,
         informative: bool,
         const: Any,
+        alt: str | list[str],
         cli: bool,
     ) -> "ArgFieldInfo":
         new = cls.__new__(cls)
@@ -115,6 +121,7 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         new.optional = optional
         new.informative = informative
         new.const = const
+        new.alt = alt
         new.cli = cli
         return new
 
@@ -125,6 +132,7 @@ def ArgField(
     optional: bool = False,
     informative: bool = False,
     const: Any = None,
+    alt: str | list[str] = [],
     cli: bool = True,
     **kwargs: Any,
 ) -> Any:
@@ -135,5 +143,6 @@ def ArgField(
         optional=optional,
         informative=informative,
         const=const,
+        alt=alt,
         cli=cli,
     )

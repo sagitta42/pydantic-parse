@@ -14,6 +14,7 @@ class PydanticArgParser(argparse.ArgumentParser):
         choices: dict[str, list[Any]] = {},
         kwargs: dict[str, dict] = {},
     ):
+        logg.debug(f"Adding arguments from model: {model.__name__}")
         for arg_name, arg_info in model.arg_fields().items():
             if arg_info.cli:
                 self.add_argument_from_field(
@@ -30,15 +31,20 @@ class PydanticArgParser(argparse.ArgumentParser):
         choices: list[Any] | None = None,
         **kwargs,
     ) -> argparse.Action:
+        logg.debug(f"Adding argument: {name}")
+
         arg_name = arg_info.alias or name
         if arg_info.flag:
             arg_name = arg_name.replace("_", "-")
             arg_name = f"--{arg_name}"
 
+        arg_name_options = [arg_name] + arg_info.alt_names
+        logg.debug(f"Arg name options: {arg_name_options}")
+
         # TODO: flag must always have default False? (store_true concept)
         if arg_info.flag and arg_info.arg_type is bool:
             return self.add_argument(
-                arg_name,
+                *arg_name_options,
                 action="store_true",
                 default=False if arg_info.is_required() else arg_info.default,
                 help=arg_info.description,
@@ -53,8 +59,8 @@ class PydanticArgParser(argparse.ArgumentParser):
             flag_kwargs["required"] = not arg_info.optional
 
         logg.debug(f"{arg_name} - {arg_info.arg_type}")
-        return super().add_argument(
-            arg_name,
+        return self.add_argument(
+            *arg_name_options,
             type=arg_info.arg_type,
             choices=choices or arg_info.choices,
             default=arg_info.arg_default if arg_info.optional else None,
