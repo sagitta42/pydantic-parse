@@ -65,9 +65,12 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
             ret = ret.value
         return ret
 
-    def as_dict(self) -> dict[str, Any]:
+    def as_dict(self, exclude: str | list[str] = []) -> dict[str, Any]:
         """
         Serialize argument properties as dict.
+
+        Args:
+            exclude (str | list[str]): properties to exclude
 
         Get FieldInfo serialization and extract annotation and attributes.
         Add custom argument field info slots.
@@ -87,6 +90,10 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         }
 
         ret |= defined_attr
+
+        to_exclude = exclude if isinstance(exclude, list) else [exclude]
+        for field in to_exclude:
+            ret.pop(field)
 
         return ret
 

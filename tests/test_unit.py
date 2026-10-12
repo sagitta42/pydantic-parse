@@ -48,6 +48,10 @@ def test_args(test_case_model):
     logg.debug(test_case_model.model_dump())
     logg.debug(test_case_model.arg_dump())
 
+def test_as_dict(test_case_model):
+    field = test_case_model.arg_fields()["value"]
+    logg.debug(field.as_dict())
+    logg.debug(field.as_dict(exclude="annotation"))
 
 # def test_add_argument(test_case_model):
 #     parser = PydanticArgParser()
