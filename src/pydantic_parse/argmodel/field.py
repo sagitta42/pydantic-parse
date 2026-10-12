@@ -1,4 +1,5 @@
 import enum
+from types import UnionType
 from typing import Any, Optional, Union, get_args, get_origin
 
 from pydantic import Field
@@ -49,17 +50,13 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         """
         Get argument type from annotation.
 
-        Extract real type from type union to cover Optional[type] case.
+        Extract real type from type union to cover Optional[type] and type | None cases.
         """
+        types = self._get_types()
+        real_types = [tp for tp in types if not tp is type(None)]
         # TODO: validator
-        assert self.annotation is not None
-        if get_origin(self.annotation) is Union:
-            types = get_args(self.annotation)
-            real_types = [tp for tp in types if not tp is type(None)]
-            # TODO: validator
-            assert len(real_types) == 1
-            return real_types[0]
-        return self.annotation
+        assert len(real_types) == 1
+        return real_types[0]
 
     @property
     def arg_default(self) -> Any:
@@ -92,6 +89,13 @@ class ArgFieldInfo(FieldInfo):  # type: ignore[misc]
         ret |= defined_attr
 
         return ret
+
+    def _get_types(self) -> list[type]:
+        # TODO: validator
+        assert self.annotation is not None
+        if get_origin(self.annotation) in [Union, UnionType]:
+            return get_args(self.annotation)
+        return [self.annotation]
 
     @classmethod
     def from_field_info(
