@@ -1,13 +1,69 @@
+from __future__ import annotations
+
 import argparse
-from typing import Any, Type
+from typing import Any, Iterable, Type
 
 from pydantic_parse.argmodel.field import ArgFieldInfo
 from pydantic_parse.argmodel.model import ArgModel
 
 from pydantic_parse.logger import logg
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from argparse import _FormatterClass
+
+class CompactHelpFormatter(argparse.HelpFormatter):
+    def _format_action_invocation(self, action: argparse.Action) -> str:
+        """
+        Format flag description.
+
+        Instead of:
+            -f FLAG, --flag FLAG    Flag description
+        Do:
+            -f, --flag FLAG         Flag description
+        """
+        if len(action.option_strings) == 0 or action.nargs == 0:
+            return super()._format_action_invocation(action)
+
+        main_arg_name = self._get_default_metavar_for_optional(action)
+        arg_input_str = self._format_args(action, main_arg_name)
+        ret = ", ".join(action.option_strings) + " " + arg_input_str
+        return ret
+
 
 class PydanticArgParser(argparse.ArgumentParser):
+    def __init__(
+        self,
+        prog: str | None = None,
+        usage: str | None = None,
+        description: str | None = None,
+        epilog: str | None = None,
+        parents: Iterable[argparse.ArgumentParser] = [],
+        formatter_class: _FormatterClass | None = None,
+        prefix_chars: str = "-",
+        fromfile_prefix_chars: str | None = None,
+        argument_default: Any = None,
+        conflict_handler: str = "error",
+        add_help: bool = True,
+        allow_abbrev: bool = True,
+        exit_on_error: bool = True,
+    ) -> None:
+        super().__init__(
+            prog=prog,
+            usage=usage,
+            description=description,
+            epilog=epilog,
+            parents=parents,
+            formatter_class=formatter_class or CompactHelpFormatter,
+            prefix_chars=prefix_chars,
+            fromfile_prefix_chars=fromfile_prefix_chars,
+            argument_default=argument_default,
+            conflict_handler=conflict_handler,
+            add_help=add_help,
+            allow_abbrev=allow_abbrev,
+            exit_on_error=exit_on_error,
+        )
+
     def add_arguments_from_model(
         self,
         model: Type[ArgModel],
