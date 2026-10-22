@@ -9,8 +9,10 @@ from pydantic_parse.argmodel.model import ArgModel
 from pydantic_parse.logger import logg
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from argparse import _FormatterClass
+
 
 class CompactHelpFormatter(argparse.HelpFormatter):
     def _format_action_invocation(self, action: argparse.Action) -> str:
@@ -72,12 +74,13 @@ class PydanticArgParser(argparse.ArgumentParser):
     ):
         logg.debug(f"Adding arguments from model: {model.__name__}")
         for arg_name, arg_info in model.arg_fields().items():
+            kwname = arg_info.alias or arg_name
             if arg_info.cli:
                 self.add_argument_from_field(
                     arg_name,
                     arg_info,
                     choices=choices.get(arg_name, None),
-                    **kwargs.get(arg_name, {}),
+                    **kwargs.get(kwname, {}),
                 )
 
     def add_argument_from_field(
