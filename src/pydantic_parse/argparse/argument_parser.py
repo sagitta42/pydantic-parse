@@ -117,10 +117,13 @@ class PydanticArgParser(argparse.ArgumentParser):
         if arg_info.flag:
             flag_kwargs["required"] = not arg_info.optional
 
+        type_kwargs = {}
+        if not arg_info.arg_type is Any:
+            type_kwargs["type"] = arg_info.arg_type
+
         logg.debug(f"{arg_name} - {arg_info.arg_type}")
         return self.add_argument(
             *arg_name_options,
-            type=arg_info.arg_type,
             choices=choices or arg_info.choices,
             default=arg_info.arg_default if arg_info.optional else None,
             nargs=(
@@ -131,6 +134,7 @@ class PydanticArgParser(argparse.ArgumentParser):
             ),
             const=arg_info.const if arg_info.flag and arg_info.informative else None,
             help=arg_info.description,
+            **type_kwargs,
             **flag_kwargs,
             **kwargs,
         )
