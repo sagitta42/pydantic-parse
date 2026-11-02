@@ -10,7 +10,7 @@ description = "Pydantic adaptor for argparse"
 name = "pydantic-parse"
 readme = "README.md"
 requires-python = ">=3.12"
-version = "0.1.5"
+version = "0.1.6"
 license-files = ["LICENSE"]
 
 [project.scripts]
