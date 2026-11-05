@@ -53,6 +53,17 @@ def test_as_dict(test_case_model):
     logg.debug(field.as_dict())
     logg.debug(field.as_dict(exclude="annotation"))
 
+
+def test_parser():
+    parser = PydanticArgParser()
+    subparsers = parser.add_subparsers(dest="command")
+
+    some_subparser = subparsers.add_parser("some", help="some description")
+
+    logg.debug(some_subparser)
+    logg.debug(some_subparser.description)
+
+
 # def test_add_argument(test_case_model):
 #     parser = PydanticArgParser()
 #     parser.add_argument_from_model("value", test_case_model)

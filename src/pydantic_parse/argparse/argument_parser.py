@@ -34,36 +34,9 @@ class CompactHelpFormatter(argparse.HelpFormatter):
 
 
 class PydanticArgParser(argparse.ArgumentParser):
-    def __init__(
-        self,
-        prog: str | None = None,
-        usage: str | None = None,
-        description: str | None = None,
-        epilog: str | None = None,
-        parents: Iterable[argparse.ArgumentParser] = [],
-        formatter_class: _FormatterClass | None = None,
-        prefix_chars: str = "-",
-        fromfile_prefix_chars: str | None = None,
-        argument_default: Any = None,
-        conflict_handler: str = "error",
-        add_help: bool = True,
-        allow_abbrev: bool = True,
-        exit_on_error: bool = True,
-    ) -> None:
+    def __init__(self, formatter_class: _FormatterClass | None = None, **kwargs):
         super().__init__(
-            prog=prog,
-            usage=usage,
-            description=description,
-            epilog=epilog,
-            parents=parents,
-            formatter_class=formatter_class or CompactHelpFormatter,
-            prefix_chars=prefix_chars,
-            fromfile_prefix_chars=fromfile_prefix_chars,
-            argument_default=argument_default,
-            conflict_handler=conflict_handler,
-            add_help=add_help,
-            allow_abbrev=allow_abbrev,
-            exit_on_error=exit_on_error,
+            formatter_class=formatter_class or CompactHelpFormatter, **kwargs
         )
 
     def add_arguments_from_model(
