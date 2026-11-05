@@ -1,9 +1,11 @@
 from typing import Any, Type
 
+# from pydantic._internal._model_construction import ModelMetaclass
 from pydantic import BaseModel, Field
 
 from pydantic_parse.argmodel.field import ArgField, ArgFieldInfo
 from pydantic_parse.argmodel.internal_attr import AttrDescription, InternalAttr
+from pydantic_parse.logger import logg
 from pydantic_parse.exceptions import PydanticParseTypeError
 
 
@@ -33,10 +35,10 @@ class ArgModelMeta(type(BaseModel)):
         # subparser: str | None = None,
         **kwds: Any,
     ):
-        namespace.setdefault("__annotations__", {})
 
         # mcs._add_field_namespace_info(namespace, InternalAttr.subparser, subparser)
 
+        logg.debug(namespace)
         cls = super().__new__(mcs, name, bases, namespace, **kwds)
 
         for field_name, field_info in getattr(cls, "__pydantic_fields__", {}).items():
