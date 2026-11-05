@@ -1,7 +1,7 @@
+import enum
 import json
 from pathlib import Path
 from typing import Optional
-from pydantic import BaseModel
 import pytest
 import sys
 import os
@@ -26,10 +26,20 @@ PATH_TO_ASSETS = Path(os.path.dirname(__file__))
 PATH_TO_CONFIGS = PATH_TO_ASSETS / "configs"
 
 
+class Category(enum.StrEnum):
+    foo = "foo"
+    bar = "bar"
+
+
 class TestCaseModel(ArgModel):
     name: str = ArgField(description="Name")
-    value: Optional[str] = ArgField(
-        description="value", optional=True, default=None, informative=True, const="foo"
+    category: Category = ArgField(description="Category with choices defined by enum")
+    value: Optional[int] = ArgField(
+        description="Optional value",
+        optional=True,
+        default=None,
+        informative=True,
+        const=42,
     )
     flag: bool = ArgField(description="flag", default=False, flag=True)
 
