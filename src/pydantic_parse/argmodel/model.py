@@ -74,6 +74,49 @@ class ArgModel(BaseModel, metaclass=ArgModelMeta):
         }
         return ret
 
+    @classmethod
+    def get_arg_params(cls, arg: str, exclude: str | list[str] = []) -> dict[str, Any]:
+        """
+        Get parameters of given ArgField.
+
+        Args:
+            exclude (str | list[str]): properties to exclude
+
+        To be used for convenience when defining ArgField in child ArgModel
+            to inherit field parameters of choice from parent ArgField.
+
+        Example:
+
+            class BaseArgModel(ArgModel):
+                param: str = ArgField(description="Parameter") # not optional
+                flag: Optional[str] = ArgField(
+                    description="Flag",
+                    informative=True, # assigned "bar" if do --flag with no input; not providing --flag at all defaults to None
+                    const="bar", 
+                )
+
+            class MyArgModel(BaseArgModel):
+                param: str = ArgField(default="foo", optional=True, **BaseArgModel.get_arg_params("param", exclude=["default", "optional"])) # is optional, inherits description
+                flag: Optional[str] = ArgField(
+                    **BaseArgModel.get_arg_params(
+                        "flag", exclude=["const", "informative"]
+                    ), # is not informative, not used as bare --flag with nothing provided
+                )
+
+        TODO: #3 automatize in ArgField e.g. inherit=True means inheriting all non-defined parameters from parent
+
+                
+        Annotation is always excluded as it cannot be provided as kwarg to Field()
+            (Deprecated in Pydantic V2.0 to be removed in V3.0)
+        """
+        arg_info = cls.arg_fields()[arg]
+        to_exclude = exclude if isinstance(exclude, list) else [exclude]
+        if "annotation" not in to_exclude:
+            to_exclude.append("annotation")
+
+        ret = arg_info.as_dict(exclude=to_exclude)
+        return ret
+
     # @model_validator(mode="before")
     # def check_hidden(self) -> Self:
     #     # TODO: check that hidden fields have not been given in input; raise error that they are reserved
